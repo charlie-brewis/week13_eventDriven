@@ -56,6 +56,10 @@ class TodoListApp:
         window.destroy()
         self.createWidgets()
 
+    def handleDelete(self, index: int) -> None:
+        self.taskList.removeTaskAtIndex(index)
+        self.createWidgets()
+
 if __name__ == "__main__":
     taskList = TaskList()
     taskList.addTaskByMsg("Buy milk")
