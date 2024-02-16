@@ -8,32 +8,38 @@ class TodoListApp:
 
         self.root = Tk()
         self.root.title("Todo List App")
-        self.createWidgets()
-        self.root.mainloop()
+        self.mainFrame = Frame(self.root)
+        self.mainFrame.pack()
     
     def run(self) -> None:
         self.createWidgets()
         self.root.mainloop()
 
     def createWidgets(self):
-        mainFrame = Frame(self.root)
-        mainFrame.pack()
+        self.clearFrame()
         numTasks = self.taskList.getNumTasks()
         for i in range(numTasks):
-            self.addTaskToFrame(i, mainFrame)
-        newTaskEntry = Entry(mainFrame)
+            self.addTaskToFrame(i)
+        newTaskEntry = Entry(self.mainFrame)
         newTaskEntry.grid(row=numTasks, column=0, padx=5, pady=5)
-        newTaskAddButton = Button(mainFrame, text="Add", command=lambda: self.handleAdd(newTaskEntry.get()))
+        newTaskAddButton = Button(self.mainFrame, text="Add", command=lambda: self.handleAdd(newTaskEntry.get()))
         newTaskAddButton.grid(row=numTasks, column=1, padx=5, pady=5)
 
-
-    def addTaskToFrame(self, index: int, frame: Frame) -> None:
-        label = Label(frame, text=self.taskList.getTaskMsgByIndex(index))
+    def addTaskToFrame(self, index: int) -> None:
+        label = Label(self.mainFrame, text=self.taskList.getTaskMsgByIndex(index))
         label.grid(row=index, column=0, padx=5, pady=5, sticky=W)
-        editButton = Button(frame, text="Edit", command=lambda: self.handleEdit(index))
+        editButton = Button(self.mainFrame, text="Edit", command=lambda: self.handleEdit(index))
         editButton.grid(row=index, column=1, padx=5, pady=5)
-        deleteButton = Button(frame, text="Delete", command=lambda: self.handleDelete(index))
+        deleteButton = Button(self.mainFrame, text="Delete", command=lambda: self.handleDelete(index))
         deleteButton.grid(row=index, column=2, padx=5, pady=5)
+
+    def clearFrame(self) -> None:
+        for widget in self.mainFrame.winfo_children():
+            widget.destroy()
+
+    def handleAdd(self, msg: str) -> None:
+        self.taskList.addTaskByMsg(msg)
+        self.createWidgets()
 
 if __name__ == "__main__":
     taskList = TaskList()
