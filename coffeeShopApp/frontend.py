@@ -26,7 +26,7 @@ class CoffeeShopApp:
         self.createWidgets()
         self.win.mainloop()
 
-    def createWidgets(self):
+    def createWidgets(self, disableAddButton=False):
         self.deleteAllCustomerWidgets()
 
         customerEntry = Entry(
@@ -43,13 +43,15 @@ class CoffeeShopApp:
         addCustomerButton = Button(
             self.mainFrame,
             text="Add",
-            command=self.addCustomer
+            command=self.addCustomer,
+            # Q1
+            state='disabled' if disableAddButton else 'normal'
         )
         addCustomerButton.grid(
             row=0,
             column=1,
             padx=5,
-            pady=5,
+            pady=5
         )
 
         numCustomers = self.coffeeShop.getNumCustomers()
@@ -83,7 +85,10 @@ class CoffeeShopApp:
     def addCustomer(self):
         name = self.newCustomerName.get()
         self.coffeeShop.addCustomer(name)
-        self.createWidgets()
+        self.createWidgets(
+            # Q1
+            disableAddButton=self.coffeeShop.getNumCustomers() == self.coffeeShop.getLimit()
+        )
         self.newCustomerName.set("")  # Clear the entry box
 
     def removeCustomer(self, index):
@@ -105,3 +110,5 @@ def main():
 
     app = CoffeeShopApp(coffeeShop)
     app.run()
+
+main()
