@@ -41,6 +41,21 @@ class TodoListApp:
         self.taskList.addTaskByMsg(msg)
         self.createWidgets()
 
+    def handleEdit(self, index: int) -> None:
+        editWindow = Toplevel()
+        editWindow.title("Edit Task")
+        entryText = StringVar()
+        entryText.set(self.taskList.getTaskMsgByIndex(index))
+        entry = Entry(editWindow, textvariable=entryText)
+        entry.pack(side="left", padx=5, pady=5)
+        confirmButton = Button(editWindow, text="Confirm", command=lambda: self.handleEditConfirmation(index, entryText, editWindow))
+        confirmButton.pack(side="right", padx=5, pady=5)
+
+    def handleEditConfirmation(self, index: int, textvariable: StringVar, window: Toplevel) -> None:
+        self.taskList.setTaskMsgAtIndex(index, textvariable.get())
+        window.destroy()
+        self.createWidgets()
+
 if __name__ == "__main__":
     taskList = TaskList()
     taskList.addTaskByMsg("Buy milk")
