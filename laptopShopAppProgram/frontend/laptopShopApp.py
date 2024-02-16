@@ -64,17 +64,30 @@ class LaptopShopApp:
 
         # Do brand as entry
 
-        ssdLabel = Label(updateFrame, text="SSD")
-        ssdLabel.grid(row=0, column=0, padx=0, pady=5)
-        selectedSsd = StringVar()
-        brandOptionMenu = OptionMenu(
-            updateFrame,
-            selectedSsd,
-            *laptop.getSsdOptions(),
-            command= lambda _: laptop.setSsd(int(selectedSsd.get()))
+        # ssdLabel = Label(updateFrame, text="SSD")
+        # ssdLabel.grid(row=0, column=0, padx=0, pady=5)
+        # selectedSsd = StringVar()
+        # brandOptionMenu = OptionMenu(
+        #     updateFrame,
+        #     selectedSsd,
+        #     *laptop.getSsdOptions(),
+        #     command= lambda _: laptop.setSsd(int(selectedSsd.get()))
+        # )
+        # brandOptionMenu.grid(row=1, column=0, padx=0, pady=5)
+        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, lambda ram: laptop.setRam(ram))
+
+    def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, command: callable) -> None:
+        label = Label(frame, text=f"{label} ({units})")
+        label.grid(row=0, column=column, padx=0, pady=5)
+        selected = StringVar()
+        selected.set(laptop.getRam())
+        optionMenu = OptionMenu(
+            frame,
+            selected,
+            *laptop.getRamOptions(),
+            command=command
         )
-        brandOptionMenu.grid(row=1, column=0, padx=0, pady=5)
-        
+        optionMenu.grid(row=1, column=column, padx=0, pady=5)
 
         
     
