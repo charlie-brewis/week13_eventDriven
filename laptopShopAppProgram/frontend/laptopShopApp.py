@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Label, Button, Entry, Toplevel, StringVar
+from tkinter import Tk, Frame, Label, Button, Entry, Toplevel, StringVar, OptionMenu
 from backend.shoppingCart import ShoppingCart
 from backend.laptop import Laptop
 from backend.gamingLaptop import GamingLaptop
@@ -48,6 +48,35 @@ class LaptopShopApp:
         if not isinstance(laptop, GamingLaptop):
             details.append(None)
         return details
+        
+    def updateLaptop(self, index: int = None) -> None:
+        if not index:
+            laptop = Laptop("Dell", 999.99)
+            self.shoppingCart.addLaptop(laptop)
+        else:
+            laptop = self.shoppingCart.getLaptopAtIndex(index)
+        brand, ram, ssd, price, gpu = self.getLaptopDetails(laptop)
+        
+        updateWindow = Toplevel(self.root)
+        updateWindow.title("Update Laptop")
+        updateFrame = Frame(updateWindow)
+        updateFrame.pack()
+
+        # Do brand as entry
+
+        ssdLabel = Label(updateFrame, text="SSD")
+        ssdLabel.grid(row=0, column=0, padx=0, pady=5)
+        selectedSsd = StringVar()
+        brandOptionMenu = OptionMenu(
+            updateFrame,
+            selectedSsd,
+            *laptop.getSsdOptions(),
+            command= lambda _: laptop.setSsd(int(selectedSsd.get()))
+        )
+        brandOptionMenu.grid(row=1, column=0, padx=0, pady=5)
+        
+
+        
     
     def addLaptop(self) -> None:
         pass

@@ -26,6 +26,9 @@ class GamingLaptop(Laptop):
     
     def getDetails(self):
         return super().getDetails()[:-1] + [self.getPrice(), self.gpu]
+    
+    def getGpuOptions(self):
+        return list(self.gpuOptions.keys())
 
     def __str__(self):
         output = f"{self.brand} Laptop with {self.ram} GB RAM "

@@ -44,6 +44,12 @@ class Laptop:
 
     def getDetails(self):
         return [self.brand, self.ram, self.ssd, self.getPrice()]
+    
+    def getSsdOptions(self):
+        return list(self.ssdOptions.keys())
+
+    def getRamOptions(self):
+        return list(self.ramOptions.keys())
 
     def __str__(self):
         output = f"{self.brand} Laptop with {self.ram} GB RAM and {self.ssd} GB SSD"
