@@ -28,6 +28,19 @@ class RecipeBookApp:
         viewRecipeButton = Button(self.mainFrame, text="View Recipe", command=lambda: self.viewRecipe(index))
         viewRecipeButton.grid(row=index, column=2, padx=5, pady=5)
     
+    def viewRecipe(self, index: int) -> None:
+        recipe = self.recipeBook.getRecipeByIndex(index)
+        recipeName, recipeMinutes, recipeInstructions = recipe.getDetails()
+        viewRecipeWindow = Toplevel(self.root)
+        viewRecipeWindow.title(recipeName)
+        recipeNameLabel = Label(viewRecipeWindow, text=recipeName)
+        recipeNameLabel.pack(padx=5, pady=5)
+        recipeMinutesLabel = Label(viewRecipeWindow, text=f"Cook time: {recipeMinutes} minutes")
+        recipeMinutesLabel.pack(padx=5, pady=5)
+        recipeInstructionsText = Text(viewRecipeWindow, width=40, height=10)
+        recipeInstructionsText.insert('1.0', recipeInstructions)
+        recipeInstructionsText.config(state='disabled')
+        recipeInstructionsText.pack(padx=5, pady=5)
 
 if __name__ == "__main__":
     recipeBook = RecipeBook()

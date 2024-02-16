@@ -15,6 +15,9 @@ class Recipe:
     def getInstructions(self) -> str:
         return self.instructions
     
+    def getDetails(self) -> tuple[str, int, str]:
+        return (self.name, self.minutesToCook, self.instructions)
+    
 
 class RecipeBook:
     def __init__(self) -> None:
@@ -23,13 +26,7 @@ class RecipeBook:
     def addRecipe(self, name: str, minutesToCook: int, instructions: str) -> None:
         newRecipe = Recipe(name, minutesToCook, instructions)
         self.recipes.append(newRecipe)
-    
-    def getRecipeByName(self, name: str) -> Recipe:
-        for recipe in self.recipes:
-            if recipe.getName() == name:
-                return recipe
-        return None
-    
+
     def getNumOfRecipes(self) -> int:
         return len(self.recipes)
     
