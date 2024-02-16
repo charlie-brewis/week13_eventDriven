@@ -60,6 +60,7 @@ class TodoListApp:
         self.taskList.removeTaskAtIndex(index)
         self.createWidgets()
 
+
 if __name__ == "__main__":
     taskList = TaskList()
     taskList.addTaskByMsg("Buy milk")
