@@ -17,6 +17,9 @@ class ShoppingCart:
 
     def getTotal(self):
         return self.total
+    
+    def setTotal(self, total):
+        self.total = total
 
     def __str__(self):
         output = "Shopping cart contains:\n"

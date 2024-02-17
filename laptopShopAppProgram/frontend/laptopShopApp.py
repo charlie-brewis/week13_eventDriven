@@ -12,12 +12,19 @@ class LaptopShopApp:
         self.root.title("Laptop Shop")
         self.mainFrame = Frame(self.root)
         self.mainFrame.pack()
+
+        self.total = DoubleVar()
+        self.total.set(self.shoppingCart.getTotal())
+        self.totalMessage = StringVar()
+        self.totalMessage.set(f"Total: £{self.total.get()}")
         
     def run(self) -> None:
         self.createWidgets()
         self.root.mainloop()
 
     def createWidgets(self) -> None:
+        totalLabel = Label(self.mainFrame, textvariable=self.totalMessage)
+        totalLabel.grid(row=0, column=0, padx=5, pady=5, columnspan=7)
         numLaptops = len(self.shoppingCart.getLaptops())
         for i in range(numLaptops):
             self.addLaptopToFrame(i)
@@ -55,7 +62,28 @@ class LaptopShopApp:
             self.shoppingCart.addLaptop(laptop)
         else:
             laptop = self.shoppingCart.getLaptopAtIndex(index)
-        brand, ram, ssd, price, gpu = self.getLaptopDetails(laptop)
+        brandVar, ramVar, ssdVar, priceVar, gpuVar = self.translateLaptopDetailsToVars(*self.getLaptopDetails(laptop))
+        
+        updateWindow = Toplevel(self.root)
+        updateWindow.title("Update Laptop")
+        updateFrame = Frame(updateWindow)
+        updateFrame.pack()
+
+        brandLabel = Label(updateFrame, textvariable=brandVar)
+        brandLabel.grid(row=0, column=0, padx=5, pady=5)
+        brandEntry = Entry(updateFrame, textvariable=brandVar)
+        brandEntry.grid(row=1, column=0, padx=5, pady=0)
+        
+        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, laptop.getRamOptions, lambda ram: laptop.setRam(ram), ramVar, priceVar)
+        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, laptop.getSsdOptions, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
+        self.addDropmenu(3, updateFrame, "GPU", "model", laptop, laptop.getGpuOptions, lambda gpu: laptop.setGpu(gpu), gpuVar, priceVar) if isinstance(laptop, GamingLaptop) else None
+
+        self.refreshPrice(updateFrame, priceVar)
+
+        submitButton = Button(updateFrame, text="Submit", command=lambda: self.submitUpdate(index, laptop, brandVar, ramVar, ssdVar, priceVar, gpuVar))
+        submitButton.grid(row=5, column=0, padx=5, pady=5)
+    
+    def translateLaptopDetailsToVars(self, brand: str, ram: int, ssd: int, price: float, gpu: str) -> tuple:
         brandVar = StringVar()
         brandVar.set(brand)
         ramVar = IntVar()
@@ -66,27 +94,8 @@ class LaptopShopApp:
         priceVar.set(price)
         gpuVar = StringVar()
         gpuVar.set(gpu)
-        
-        
-        updateWindow = Toplevel(self.root)
-        updateWindow.title("Update Laptop")
-        updateFrame = Frame(updateWindow)
-        updateFrame.pack()
+        return brandVar, ramVar, ssdVar, priceVar, gpuVar
 
-        brandLabel = Label(updateFrame, text=f"Brand: {brand}")
-        brandLabel.grid(row=0, column=0, padx=5, pady=5)
-        brandEntry = Entry(updateFrame, textvariable=brandVar)
-        brandEntry.grid(row=1, column=0, padx=5, pady=0)
-        
-        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, laptop.getRamOptions, lambda ram: laptop.setRam(ram), ramVar, priceVar)
-        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, laptop.getSsdOptions, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
-        self.addDropmenu(3, updateFrame, "GPU", "", laptop, laptop.getGpuOptions, lambda gpu: laptop.setGpu(gpu), gpuVar, priceVar) if isinstance(laptop, GamingLaptop) else None
-
-        self.refreshPrice(updateFrame, priceVar)
-
-        submitButton = Button(updateFrame, text="Submit", command=lambda: self.submitUpdate(index, laptop, brandVar, ramVar, ssdVar, priceVar, gpuVar))
-        submitButton.grid(row=5, column=0, padx=5, pady=5)
-        
     def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, optionsCommand: callable, command: callable, detailVar, priceVar: DoubleVar) -> None:
         label = Label(frame, text=f"{label} ({units})")
         label.grid(row=0, column=column, padx=5, pady=5)
@@ -107,6 +116,25 @@ class LaptopShopApp:
         command(detail)
         priceVar.set(laptop.getPrice())
         self.refreshPrice(frame, priceVar)
+        
+    def submitUpdate(self, index: int, laptop: Laptop, brandVar: StringVar, ramVar: IntVar, ssdVar: IntVar, priceVar: DoubleVar, gpuVar: StringVar) -> None:
+        laptop.setBrand(brandVar.get())
+        laptop.setRam(ramVar.get())
+        laptop.setSsd(ssdVar.get())
+        if isinstance(laptop, GamingLaptop):
+            laptop.setGpu(gpuVar.get())
+        self.shoppingCart.getLaptops()[index] = laptop
+        self.shoppingCart.setTotal(self.shoppingCart.getTotal() - self.shoppingCart.getLaptopAtIndex(index).getPrice() + priceVar.get())
+        self.refreshApp()
+
+    def refreshApp(self) -> None:
+        self.destroyWidgets()
+        self.createWidgets()
+
+    def destroyWidgets(self) -> None:
+        for widget in self.mainFrame.winfo_children():
+            widget.destroy()
+
 
         
 

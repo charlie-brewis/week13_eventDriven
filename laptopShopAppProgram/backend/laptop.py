@@ -22,6 +22,9 @@ class Laptop:
 
     def getBrand(self):
         return self.brand
+    
+    def setBrand(self, brand):
+        self.brand = brand
 
     def getRam(self):
         return self.ram
