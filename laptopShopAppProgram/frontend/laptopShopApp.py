@@ -78,24 +78,22 @@ class LaptopShopApp:
         brandEntry = Entry(updateFrame, textvariable=brandVar)
         brandEntry.grid(row=1, column=0, padx=5, pady=0)
         
-        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, lambda ram: laptop.setRam(ram), ramVar, priceVar)
-        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
-        self.addDropmenu(3, updateFrame, "GPU", "", laptop, lambda gpu: laptop.setGpu(gpu, gpuVar), priceVar) if isinstance(laptop, GamingLaptop) else None
+        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, laptop.getRamOptions, lambda ram: laptop.setRam(ram), ramVar, priceVar)
+        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, laptop.getSsdOptions, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
+        self.addDropmenu(3, updateFrame, "GPU", "", laptop, laptop.getGpuOptions, lambda gpu: laptop.setGpu(gpu, gpuVar), priceVar) if isinstance(laptop, GamingLaptop) else None
 
-        # priceLabel = Label(updateFrame, text=f"Price: £{price}")
-        # priceLabel.grid(row=4, column=0, padx=5, pady=5)
         self.refreshPrice(updateFrame, priceVar)
 
         submitButton = Button(updateFrame, text="Submit", command=lambda: self.submitUpdate(index, laptop, brandVar, ramVar, ssdVar, priceVar, gpuVar))
         submitButton.grid(row=5, column=0, padx=5, pady=5)
         
-    def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, command: callable, detailVar, priceVar: DoubleVar) -> None:
+    def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, optionsCommand: callable, command: callable, detailVar, priceVar: DoubleVar) -> None:
         label = Label(frame, text=f"{label} ({units})")
         label.grid(row=0, column=column, padx=5, pady=5)
         optionMenu = OptionMenu(
             frame,
             detailVar,
-            *laptop.getRamOptions(),
+            *optionsCommand(),
             command=lambda _: self.updateDetail(detailVar, laptop, command, priceVar, frame)
         )
         optionMenu.grid(row=1, column=column, padx=5, pady=0)
