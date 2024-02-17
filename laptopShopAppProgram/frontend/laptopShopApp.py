@@ -29,26 +29,27 @@ class LaptopShopApp:
         for i in range(numLaptops):
             self.addLaptopToFrame(i)
         addLaptopButton = Button(self.mainFrame, text="Add Laptop", command=self.addLaptop)
-        addLaptopButton.grid(row=numLaptops, column=0, padx=5, pady=5, columnspan=7)
+        addLaptopButton.grid(row=numLaptops + 1, column=0, padx=5, pady=5, columnspan=7)
 
     def addLaptopToFrame(self, index: int) -> None:
+        rowIndex = index + 1
         laptop = self.shoppingCart.getLaptopAtIndex(index)
         brand, ram, ssd, price, gpu = self.getLaptopDetails(laptop)
         brandLabel = Label(self.mainFrame, text=f"Brand: {brand}")
-        brandLabel.grid(row=index, column=0, padx=5, pady=5)
+        brandLabel.grid(row=rowIndex, column=0, padx=5, pady=5)
         ramLabel = Label(self.mainFrame, text=f"RAM: {ram} GB")
-        ramLabel.grid(row=index, column=1, padx=5, pady=5)
+        ramLabel.grid(row=rowIndex, column=1, padx=5, pady=5)
         ssdLabel = Label(self.mainFrame, text=f"SSD: {ssd} GB")
-        ssdLabel.grid(row=index, column=2, padx=5, pady=5)
+        ssdLabel.grid(row=rowIndex, column=2, padx=5, pady=5)
         priceLabel = Label(self.mainFrame, text=f"Price: £{price}")
-        priceLabel.grid(row=index, column=3, padx=5, pady=5)
+        priceLabel.grid(row=rowIndex, column=3, padx=5, pady=5)
         if gpu:
             gpuLabel = Label(self.mainFrame, text=f"GPU: {gpu}")
-            gpuLabel.grid(row=index, column=4, padx=5, pady=5)
+            gpuLabel.grid(row=rowIndex, column=4, padx=5, pady=5)
         updateButton = Button(self.mainFrame, text="Update", command=lambda: self.updateLaptop(index))
-        updateButton.grid(row=index, column=5, padx=5, pady=5)
+        updateButton.grid(row=rowIndex, column=5, padx=5, pady=5)
         removeButton = Button(self.mainFrame, text="Remove", command=lambda: self.removeLaptop(index))
-        removeButton.grid(row=index, column=6, padx=5, pady=5)
+        removeButton.grid(row=rowIndex, column=6, padx=5, pady=5)
 
     def getLaptopDetails(self, laptop: Laptop) -> list:
         details = laptop.getDetails()
@@ -123,8 +124,7 @@ class LaptopShopApp:
         laptop.setSsd(ssdVar.get())
         if isinstance(laptop, GamingLaptop):
             laptop.setGpu(gpuVar.get())
-        self.shoppingCart.getLaptops()[index] = laptop
-        self.shoppingCart.setTotal(self.shoppingCart.getTotal() - self.shoppingCart.getLaptopAtIndex(index).getPrice() + priceVar.get())
+        self.shoppingCart.setTotal(self.shoppingCart.getTotal() - laptop.getPrice() + priceVar.get())
         self.refreshApp()
 
     def refreshApp(self) -> None:
