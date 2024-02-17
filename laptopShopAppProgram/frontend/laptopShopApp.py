@@ -2,6 +2,7 @@ from tkinter import Tk, Frame, Label, Button, Entry, Toplevel, StringVar, IntVar
 from backend.shoppingCart import ShoppingCart
 from backend.laptop import Laptop
 from backend.gamingLaptop import GamingLaptop
+from frontend.laptopUpdateWindow import LaptopUpdateWindow
 
 class LaptopShopApp:
 
@@ -58,65 +59,8 @@ class LaptopShopApp:
         return details
         
     def updateLaptop(self, index: int = None) -> None:
-        if not index:
-            laptop = Laptop("Dell", 999.99)
-            self.shoppingCart.addLaptop(laptop)
-        else:
-            laptop = self.shoppingCart.getLaptopAtIndex(index)
-        brandVar, ramVar, ssdVar, priceVar, gpuVar = self.translateLaptopDetailsToVars(*self.getLaptopDetails(laptop))
-        
-        updateWindow = Toplevel(self.root)
-        updateWindow.title("Update Laptop")
-        updateFrame = Frame(updateWindow)
-        updateFrame.pack()
-
-        brandLabel = Label(updateFrame, textvariable=brandVar)
-        brandLabel.grid(row=0, column=0, padx=5, pady=5)
-        brandEntry = Entry(updateFrame, textvariable=brandVar)
-        brandEntry.grid(row=1, column=0, padx=5, pady=0)
-        
-        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, laptop.getRamOptions, lambda ram: laptop.setRam(ram), ramVar, priceVar)
-        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, laptop.getSsdOptions, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
-        self.addDropmenu(3, updateFrame, "GPU", "model", laptop, laptop.getGpuOptions, lambda gpu: laptop.setGpu(gpu), gpuVar, priceVar) if isinstance(laptop, GamingLaptop) else None
-
-        self.refreshPrice(updateFrame, priceVar)
-
-        submitButton = Button(updateFrame, text="Submit", command=lambda: self.submitUpdate(index, laptop, brandVar, ramVar, ssdVar, priceVar, gpuVar))
-        submitButton.grid(row=5, column=0, padx=5, pady=5)
+        updateWindow = LaptopUpdateWindow(index, self.root, self.shoppingCart)
     
-    def translateLaptopDetailsToVars(self, brand: str, ram: int, ssd: int, price: float, gpu: str) -> tuple:
-        brandVar = StringVar()
-        brandVar.set(brand)
-        ramVar = IntVar()
-        ramVar.set(ram)
-        ssdVar = IntVar()
-        ssdVar.set(ssd)
-        priceVar = DoubleVar()
-        priceVar.set(price)
-        gpuVar = StringVar()
-        gpuVar.set(gpu)
-        return brandVar, ramVar, ssdVar, priceVar, gpuVar
-
-    def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, optionsCommand: callable, command: callable, detailVar, priceVar: DoubleVar) -> None:
-        label = Label(frame, text=f"{label} ({units})")
-        label.grid(row=0, column=column, padx=5, pady=5)
-        optionMenu = OptionMenu(
-            frame,
-            detailVar,
-            *optionsCommand(),
-            command=lambda _: self.updateDetail(detailVar, laptop, command, priceVar, frame)
-        )
-        optionMenu.grid(row=1, column=column, padx=5, pady=0)
-
-    def refreshPrice(self, frame, priceVar) -> None:
-        priceLabel = Label(frame, text=f"Price: £{priceVar.get()}")
-        priceLabel.grid(row=4, column=0, padx=5, pady=5)
-    
-    def updateDetail(self, detailVar, laptop, command, priceVar, frame) -> None:
-        detail = detailVar.get()
-        command(detail)
-        priceVar.set(laptop.getPrice())
-        self.refreshPrice(frame, priceVar)
         
     def submitUpdate(self, index: int, laptop: Laptop, brandVar: StringVar, ramVar: IntVar, ssdVar: IntVar, priceVar: DoubleVar, gpuVar: StringVar) -> None:
         laptop.setBrand(brandVar.get())
