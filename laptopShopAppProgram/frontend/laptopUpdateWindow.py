@@ -88,11 +88,6 @@ class LaptopUpdateWindow:
         self.laptop.setSsd(self.ssdVar.get())
         if isinstance(self.laptop, GamingLaptop):
             self.laptop.setGpu(self.gpuVar.get())
-        print(f"old price: {self.oldPrice.get()}")
-        print(f"new price: {self.laptop.getPrice()}")
-        print()
-        print(self.shoppingCart.getTotal())
         self.shoppingCart.setTotal(self.shoppingCart.getTotal() - self.oldPrice.get() + self.laptop.getPrice())
-        print(self.shoppingCart.getTotal())
         self.oldPrice.set(self.laptop.getPrice())
         self.refreshMainAppCommand()

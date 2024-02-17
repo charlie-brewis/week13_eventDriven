@@ -15,6 +15,11 @@ class ShoppingCart:
     def getLaptopAtIndex(self, index: int):
         return self.laptops[index]
 
+    def popLaptopAtIndex(self, index: int):
+        laptop = self.laptops.pop(index)
+        self.total -= laptop.getPrice()
+        return laptop
+
     def getTotal(self):
         return self.total
     

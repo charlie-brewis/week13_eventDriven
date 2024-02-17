@@ -17,7 +17,7 @@ class LaptopShopApp:
         # self.total = DoubleVar()
         # self.total.set(self.shoppingCart.getTotal())
         self.totalMessage = StringVar()
-        self.totalMessage.set(f"Total: £{self.shoppingCart.getTotal()}")
+        self.totalMessage.set(f"Total: £{self.shoppingCart.getTotal(): .2f}")
         
     def run(self) -> None:
         self.createWidgets()
@@ -63,7 +63,7 @@ class LaptopShopApp:
         
     def refreshApp(self) -> None:
         self.destroyWidgets()
-        self.totalMessage.set(f"Total: £{self.shoppingCart.getTotal()}")
+        self.totalMessage.set(f"Total: £{self.shoppingCart.getTotal() :.2f}")
         self.createWidgets()
 
     def destroyWidgets(self) -> None:
@@ -72,3 +72,8 @@ class LaptopShopApp:
 
     def addLaptop(self) -> None:
         self.updateLaptop()
+
+    def removeLaptop(self, index: int) -> None:
+        self.shoppingCart.popLaptopAtIndex(index)
+        self.refreshApp()
+        
