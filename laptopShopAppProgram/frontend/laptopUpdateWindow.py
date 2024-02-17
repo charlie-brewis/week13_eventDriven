@@ -4,9 +4,10 @@ from backend.laptop import Laptop
 from backend.gamingLaptop import GamingLaptop
 
 class LaptopUpdateWindow:
-    def __init__(self, index: int, root: Tk, shoppingCart: ShoppingCart):
+    def __init__(self, index: int, root: Tk, shoppingCart: ShoppingCart, refreshMainAppCommand: callable):
         self.root = root
         self.shoppingCart = shoppingCart
+        self.refreshMainAppCommand = refreshMainAppCommand
         
         if not index:
             self.laptop = Laptop("Dell", 999.99)
@@ -16,7 +17,7 @@ class LaptopUpdateWindow:
         self.brandVar, \
         self.ramVar, \
         self.ssdVar, \
-        self.priceVar, \
+        self.oldPrice, \
         self.gpuVar \
         = self.translateLaptopDetailsToVars(*self.sanitiseLaptopDetails())
 
@@ -49,10 +50,10 @@ class LaptopUpdateWindow:
         self.addDropmenu(2, "SSD", "GB", self.laptop.getSsdOptions, lambda ssd: self.laptop.setSsd(ssd), self.ssdVar)
         self.addDropmenu(3, "GPU", "model", self.laptop.getGpuOptions, lambda gpu: self.laptop.setGpu(gpu), self.gpuVar) if isinstance(self.laptop, GamingLaptop) else None
 
-        self.refreshPrice(self.mainFrame, self.priceVar)
+        self.refreshPriceLabel()
 
-        # submitButton = Button(self.mainFrame, text="Submit", command=lambda: self.submitUpdate(index, laptop, brandVar, ramVar, ssdVar, priceVar, gpuVar))
-        # submitButton.grid(row=5, column=0, padx=5, pady=5) 
+        submitButton = Button(self.mainFrame, text="Submit", command=self.submitUpdate)
+        submitButton.grid(row=5, column=0, padx=5, pady=5) 
 
     def addDropmenu(self, column: int, label: str, units: str, optionsCommand: callable, command: callable, detailVar) -> None:
         label = Label(self.mainFrame, text=f"{label} ({units})")
@@ -68,11 +69,11 @@ class LaptopUpdateWindow:
     def updateDetail(self, detailVar, command) -> None:
         detail = detailVar.get()
         command(detail)
-        self.priceVar.set(self.laptop.getPrice())
-        self.refreshPrice(self.mainFrame, self.priceVar)
+        # self.priceVar.set(self.laptop.getPrice())
+        self.refreshPriceLabel()
 
-    def refreshPrice(self, frame, priceVar) -> None:
-        priceLabel = Label(frame, text=f"Price: £{priceVar.get()}")
+    def refreshPriceLabel(self) -> None:
+        priceLabel = Label(self.mainFrame, text=f"Price: £{self.laptop.getPrice()}")
         priceLabel.grid(row=4, column=0, padx=5, pady=5)
     
     def sanitiseLaptopDetails(self) -> list:
@@ -80,3 +81,18 @@ class LaptopUpdateWindow:
         if not isinstance(self.laptop, GamingLaptop):
             details.append(None)
         return details
+    
+    def submitUpdate(self) -> None:
+        self.laptop.setBrand(self.brandVar.get())
+        self.laptop.setRam(self.ramVar.get())
+        self.laptop.setSsd(self.ssdVar.get())
+        if isinstance(self.laptop, GamingLaptop):
+            self.laptop.setGpu(self.gpuVar.get())
+        print(f"old price: {self.oldPrice.get()}")
+        print(f"new price: {self.laptop.getPrice()}")
+        print()
+        print(self.shoppingCart.getTotal())
+        self.shoppingCart.setTotal(self.shoppingCart.getTotal() - self.oldPrice.get() + self.laptop.getPrice())
+        print(self.shoppingCart.getTotal())
+        self.oldPrice.set(self.laptop.getPrice())
+        self.refreshMainAppCommand()

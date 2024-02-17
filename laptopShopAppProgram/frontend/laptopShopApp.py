@@ -14,10 +14,10 @@ class LaptopShopApp:
         self.mainFrame = Frame(self.root)
         self.mainFrame.pack()
 
-        self.total = DoubleVar()
-        self.total.set(self.shoppingCart.getTotal())
+        # self.total = DoubleVar()
+        # self.total.set(self.shoppingCart.getTotal())
         self.totalMessage = StringVar()
-        self.totalMessage.set(f"Total: £{self.total.get()}")
+        self.totalMessage.set(f"Total: £{self.shoppingCart.getTotal()}")
         
     def run(self) -> None:
         self.createWidgets()
@@ -59,20 +59,11 @@ class LaptopShopApp:
         return details
         
     def updateLaptop(self, index: int = None) -> None:
-        updateWindow = LaptopUpdateWindow(index, self.root, self.shoppingCart)
-    
+        LaptopUpdateWindow(index, self.root, self.shoppingCart, self.refreshApp)
         
-    def submitUpdate(self, index: int, laptop: Laptop, brandVar: StringVar, ramVar: IntVar, ssdVar: IntVar, priceVar: DoubleVar, gpuVar: StringVar) -> None:
-        laptop.setBrand(brandVar.get())
-        laptop.setRam(ramVar.get())
-        laptop.setSsd(ssdVar.get())
-        if isinstance(laptop, GamingLaptop):
-            laptop.setGpu(gpuVar.get())
-        self.shoppingCart.setTotal(self.shoppingCart.getTotal() - laptop.getPrice() + priceVar.get())
-        self.refreshApp()
-
     def refreshApp(self) -> None:
         self.destroyWidgets()
+        self.totalMessage.set(f"Total: £{self.shoppingCart.getTotal()}")
         self.createWidgets()
 
     def destroyWidgets(self) -> None:
