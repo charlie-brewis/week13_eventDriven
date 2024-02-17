@@ -34,7 +34,7 @@ class LaptopShopApp:
     def addLaptopToFrame(self, index: int) -> None:
         rowIndex = index + 1
         laptop = self.shoppingCart.getLaptopAtIndex(index)
-        brand, ram, ssd, price, gpu = self.getLaptopDetails(laptop)
+        brand, ram, ssd, price, gpu = self.sanitiseLaptopDetails(laptop)
         brandLabel = Label(self.mainFrame, text=f"Brand: {brand}")
         brandLabel.grid(row=rowIndex, column=0, padx=5, pady=5)
         ramLabel = Label(self.mainFrame, text=f"RAM: {ram} GB")
@@ -51,7 +51,7 @@ class LaptopShopApp:
         removeButton = Button(self.mainFrame, text="Remove", command=lambda: self.removeLaptop(index))
         removeButton.grid(row=rowIndex, column=6, padx=5, pady=5)
 
-    def getLaptopDetails(self, laptop: Laptop) -> list:
+    def sanitiseLaptopDetails(self, laptop: Laptop) -> list:
         details = laptop.getDetails()
         if not isinstance(laptop, GamingLaptop):
             details.append(None)
