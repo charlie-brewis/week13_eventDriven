@@ -70,10 +70,5 @@ class LaptopShopApp:
         for widget in self.mainFrame.winfo_children():
             widget.destroy()
 
-
-        
-
-        
-    
     def addLaptop(self) -> None:
-        pass
+        self.updateLaptop()
