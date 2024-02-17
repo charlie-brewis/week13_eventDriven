@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Label, Button, Entry, Toplevel, StringVar, OptionMenu
+from tkinter import Tk, Frame, Label, Button, Entry, Toplevel, StringVar, IntVar, DoubleVar, OptionMenu
 from backend.shoppingCart import ShoppingCart
 from backend.laptop import Laptop
 from backend.gamingLaptop import GamingLaptop
@@ -56,30 +56,61 @@ class LaptopShopApp:
         else:
             laptop = self.shoppingCart.getLaptopAtIndex(index)
         brand, ram, ssd, price, gpu = self.getLaptopDetails(laptop)
+        brandVar = StringVar()
+        brandVar.set(brand)
+        ramVar = IntVar()
+        ramVar.set(ram)
+        ssdVar = IntVar()
+        ssdVar.set(ssd)
+        priceVar = DoubleVar()
+        priceVar.set(price)
+        gpuVar = StringVar()
+        gpuVar.set(gpu)
+        
         
         updateWindow = Toplevel(self.root)
         updateWindow.title("Update Laptop")
         updateFrame = Frame(updateWindow)
         updateFrame.pack()
 
-        # Do brand as entry
-        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, lambda ram: laptop.setRam(ram))
-        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, lambda ssd: laptop.setSsd(ssd))
-        if isinstance(laptop, GamingLaptop):
-            self.addDropmenu(3, updateFrame, "GPU", "", laptop, lambda gpu: laptop.setGpu(gpu))
+        brandLabel = Label(updateFrame, text=f"Brand: {brand}")
+        brandLabel.grid(row=0, column=0, padx=5, pady=5)
+        brandEntry = Entry(updateFrame, textvariable=brandVar)
+        brandEntry.grid(row=1, column=0, padx=5, pady=0)
+        
+        self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, lambda ram: laptop.setRam(ram), ramVar, priceVar)
+        self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
+        self.addDropmenu(3, updateFrame, "GPU", "", laptop, lambda gpu: laptop.setGpu(gpu, gpuVar), priceVar) if isinstance(laptop, GamingLaptop) else None
 
-    def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, command: callable) -> None:
+        # priceLabel = Label(updateFrame, text=f"Price: £{price}")
+        # priceLabel.grid(row=4, column=0, padx=5, pady=5)
+        self.refreshPrice(updateFrame, priceVar)
+
+        submitButton = Button(updateFrame, text="Submit", command=lambda: self.submitUpdate(index, laptop, brandVar, ramVar, ssdVar, priceVar, gpuVar))
+        submitButton.grid(row=5, column=0, padx=5, pady=5)
+        
+    def addDropmenu(self, column: int, frame: Frame, label: str, units: str, laptop: Laptop, command: callable, detailVar, priceVar: DoubleVar) -> None:
         label = Label(frame, text=f"{label} ({units})")
         label.grid(row=0, column=column, padx=5, pady=5)
-        selected = StringVar()
-        selected.set(laptop.getRam())
         optionMenu = OptionMenu(
             frame,
-            selected,
+            detailVar,
             *laptop.getRamOptions(),
-            command=command
+            command=lambda _: self.updateDetail(detailVar, laptop, command, priceVar, frame)
         )
         optionMenu.grid(row=1, column=column, padx=5, pady=0)
+
+    def refreshPrice(self, frame, priceVar) -> None:
+        priceLabel = Label(frame, text=f"Price: £{priceVar.get()}")
+        priceLabel.grid(row=4, column=0, padx=5, pady=5)
+    
+    def updateDetail(self, detailVar, laptop, command, priceVar, frame) -> None:
+        detail = detailVar.get()
+        command(detail)
+        priceVar.set(laptop.getPrice())
+        self.refreshPrice(frame, priceVar)
+
+        
 
         
     
