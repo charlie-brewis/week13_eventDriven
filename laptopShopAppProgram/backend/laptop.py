@@ -58,3 +58,4 @@ class Laptop:
         output = f"{self.brand} Laptop with {self.ram} GB RAM and {self.ssd} GB SSD"
         output += f"priced at £{self.getPrice()}"
         return output
+    

@@ -32,3 +32,4 @@ class ShoppingCart:
             output += f"{laptop}\n"
         output += f"Total price is £{self.total}"
         return output
+    
