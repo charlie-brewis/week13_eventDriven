@@ -80,7 +80,7 @@ class LaptopShopApp:
         
         self.addDropmenu(1, updateFrame, "RAM", "GB", laptop, laptop.getRamOptions, lambda ram: laptop.setRam(ram), ramVar, priceVar)
         self.addDropmenu(2, updateFrame, "SSD", "GB", laptop, laptop.getSsdOptions, lambda ssd: laptop.setSsd(ssd), ssdVar, priceVar)
-        self.addDropmenu(3, updateFrame, "GPU", "", laptop, laptop.getGpuOptions, lambda gpu: laptop.setGpu(gpu, gpuVar), priceVar) if isinstance(laptop, GamingLaptop) else None
+        self.addDropmenu(3, updateFrame, "GPU", "", laptop, laptop.getGpuOptions, lambda gpu: laptop.setGpu(gpu), gpuVar, priceVar) if isinstance(laptop, GamingLaptop) else None
 
         self.refreshPrice(updateFrame, priceVar)
 
